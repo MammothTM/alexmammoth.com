@@ -1,16 +1,179 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>alexmammoth.com</title>
-  <style>
-    html, body { height: 100%; margin: 0; }
-    body { display: grid; place-items: center; background: #0b0b0c; color: #e8e8ea;
-           font: 500 1.1rem/1.4 system-ui, -apple-system, sans-serif; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050a09">
+<meta name="description" content="An animated cyberpunk Matrix-inspired scene, rendered entirely in a standalone HTML file.">
+<title>NEURAL LINK • Animated Cyberpunk Scene</title>
+<style>
+:root {color-scheme:dark;--neon:#64ff4a;--cyan:#00f4ff;--subtle:rgba(173,255,177,.55)}
+*{box-sizing:border-box}
+html,body{height:100%;width:100%;margin:0;overflow:hidden;background:#020509;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+button{font:inherit}
+#viewport {width:100vw;height:100vh;min-height:100svh;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 53%,#121149 0%,#080817 42%,#020509 90%);isolation:isolate}
+#world {position:absolute;left:50%;top:50%;width:max(100vw,calc(100vh * 1672 / 941));height:max(100vh,calc(100vw * 941 / 1672));transform:translate(-50%,-50%) scale(1.015);will-change:transform;overflow:hidden}
+#art{width:100%;height:100%;display:block;pointer-events:none;user-select:none}
+canvas,.vfx {position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#rain {mix-blend-mode:screen;opacity:.85}
+#hologram {mix-blend-mode:screen}
+.screen-sheen{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;clip-path:polygon(12.65% 38.15%,29.9% 44.10%,34.4% 78.5%,17.75% 79.7%);background:linear-gradient(112deg,transparent 22%,rgba(103,255,154,.035) 37%,rgba(185,255,224,.20) 47%,rgba(86,255,129,.05) 51%,transparent 65%);background-size:350% 100%;animation:screenSweep 7s ease-in-out infinite;opacity:.8}
+#chromatic {position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 47% 61%,transparent 0%,transparent 38%,rgba(0,0,8,.32) 94%),linear-gradient(90deg,rgba(0,255,90,.035),transparent 35%,rgba(136,0,255,.025) 80%)}
+#grain{position:absolute;inset:0;opacity:.13;mix-blend-mode:overlay;pointer-events:none;background-image:url('data:image/svg+xml,%3Csvg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23n)" opacity=".32"/%3E%3C/svg%3E')}
+#scanlines{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0px,transparent 3px,rgba(0,0,0,.12) 4px);opacity:.20;mix-blend-mode:multiply}
+#sweep{position:absolute;left:0;right:0;top:-40%;height:35%;background:linear-gradient(to bottom,transparent,rgba(35,255,90,.012),rgba(95,255,150,.045),transparent);pointer-events:none;mix-blend-mode:screen;animation:slowSweep 16s linear infinite}
+#flare{position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(to bottom,rgba(151,255,171,.08),transparent 45%);mix-blend-mode:screen;animation:flare 12s steps(1,end) infinite}
+#intro{position:absolute;inset:0;background:#020709;z-index:8;pointer-events:none;animation:intro 1.75s ease-out .2s forwards}
+.ui{position:absolute;inset:0;z-index:10;pointer-events:none;color:#d8ffe0}
+.hud-top{position:absolute;top:clamp(20px,2.4vw,43px);left:clamp(22px,2.75vw,52px);display:flex;gap:15px;align-items:center;filter:drop-shadow(0 0 10px rgba(33,255,108,.26))}
+.signal{width:7px;height:7px;border-radius:50%;background:#70ff78;box-shadow:0 0 9px #60ff71,0 0 22px rgba(96,255,113,.8);animation:blink 2s ease-in-out infinite}
+.signal-heading{font-size:clamp(9px,.65vw,12px);font-weight:800;letter-spacing:.23em}
+.signal-sub{font-size:clamp(8px,.55vw,10px);letter-spacing:.15em;color:var(--subtle);margin-top:6px}
+.hud-right{position:absolute;top:clamp(18px,2.4vw,42px);right:clamp(20px,2.6vw,50px);display:flex;gap:8px;pointer-events:auto}
+.ctrl{border:1px solid rgba(108,255,151,.29);background:rgba(2,18,14,.64);backdrop-filter:blur(12px);color:#d4ffdb;padding:10px 13px;min-height:37px;border-radius:3px;text-transform:uppercase;letter-spacing:.15em;font-size:10px;cursor:pointer;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease}
+.ctrl:hover,.ctrl:focus-visible{border-color:rgba(122,255,156,.8);background:rgba(18,61,35,.87);box-shadow:0 0 16px rgba(51,255,105,.19);outline:none}
+.hud-bottom{position:absolute;bottom:clamp(18px,2.8vw,52px);left:clamp(22px,2.75vw,52px);display:flex;align-items:center;gap:14px}
+.hud-bar{width:39px;height:1px;background:linear-gradient(90deg,#63ff76,rgba(99,255,118,0));box-shadow:0 0 10px #62ff71}
+.footer-title{font-size:10px;font-weight:800;letter-spacing:.23em;line-height:1.5}
+.footer-sub{color:rgba(181,255,193,.55);font-size:9px;letter-spacing:.14em;margin-top:4px}
+.hud-bottom-right{position:absolute;bottom:clamp(18px,2.8vw,52px);right:clamp(20px,2.6vw,50px);display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:.15em;color:rgba(190,255,196,.55)}
+.blink-square{width:5px;height:5px;background:#61ff7f;box-shadow:0 0 8px #58ff76;animation:blink 1.6s steps(1) infinite}
+.edge{position:absolute;width:29px;height:29px;opacity:.34;pointer-events:none}
+.edge.tl{top:13px;left:14px;border-top:1px solid #8cff96;border-left:1px solid #8cff96}
+.edge.bl{bottom:13px;left:14px;border-bottom:1px solid #8cff96;border-left:1px solid #8cff96}
+.edge.tr{top:13px;right:14px;border-top:1px solid #8cff96;border-right:1px solid #8cff96}
+.edge.br{bottom:13px;right:14px;border-bottom:1px solid #8cff96;border-right:1px solid #8cff96}
+#mouse-glow{position:absolute;inset:0;pointer-events:none;z-index:2;mix-blend-mode:screen;opacity:.35;--x:50%;--y:50%;background:radial-gradient(300px circle at var(--x) var(--y),rgba(47,255,102,.065),transparent 75%)}
+body.paused #rain,body.paused #hologram{opacity:.1}
+body.paused *,body.paused *::after,body.paused *::before{animation-play-state:paused!important}
+@keyframes screenSweep{0%,13%{background-position:130% 0}50%,90%{background-position:-70% 0}100%{background-position:-70% 0}}
+@keyframes slowSweep{0%{transform:translateY(-100vh)}100%{transform:translateY(210vh)}}
+@keyframes flare{0%,38%,40%,41%,72%,73%,100%{opacity:0}39%,72.5%{opacity:.7}}
+@keyframes blink{0%,100%{opacity:.95}50%{opacity:.32}}
+@keyframes intro{0%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media (max-width:640px){.signal-heading{letter-spacing:.11em}.signal-sub{letter-spacing:.04em}.hud-right{right:15px;top:15px}.ctrl{font-size:9px;padding:8px}.hud-top{left:18px;top:20px}.hud-bottom{left:18px;bottom:20px}.hud-bottom-right{right:18px;bottom:20px}.footer-sub{font-size:8px}.hud-bottom-right span:last-child{display:none}}
+@media (prefers-reduced-motion:reduce){#world{transform:translate(-50%,-50%) scale(1.015)!important}.screen-sheen,#sweep,#flare,.signal,.blink-square{animation:none!important}#intro{display:none}}
+</style>
 </head>
 <body>
-  <p>alexmammoth.com</p>
+<div id="viewport" aria-label="Animated cyberpunk illustration of a man at a laptop surrounded by Matrix-style code and holographic portraits">
+  <div id="world">
+    <img id="art" alt="Anime-style man working on a laptop with neon holograms of women and green code rain" draggable="false" src="art.png">
+    <canvas id="rain" width="1672" height="941" aria-hidden="true"></canvas>
+    <canvas id="hologram" width="1672" height="941" aria-hidden="true"></canvas>
+    <div class="screen-sheen vfx"></div>
+    <div id="chromatic" class="vfx"></div>
+    <div id="sweep" class="vfx"></div>
+    <div id="flare" class="vfx"></div>
+    <div id="grain" class="vfx"></div>
+    <div id="scanlines" class="vfx"></div>
+    <div id="mouse-glow" class="vfx"></div>
+  </div>
+  <div class="ui">
+    <div class="edge tl"></div><div class="edge tr"></div><div class="edge bl"></div><div class="edge br"></div>
+    <div class="hud-top">
+      <div class="signal"></div>
+      <div><div class="signal-heading">NEURAL LINK <span style="opacity:.55">/ 01</span></div><div class="signal-sub">CONNECTION ESTABLISHED</div></div>
+    </div>
+    <div class="hud-right"><button id="pause" class="ctrl" title="Pause or resume animation (Space)" aria-pressed="false">⏸ PAUSE</button><button id="fullscreen" class="ctrl" title="Fullscreen (F)">⛶ FULLSCREEN</button></div>
+    <div class="hud-bottom"><div class="hud-bar"></div><div><div class="footer-title">SYSTEM ONLINE</div><div class="footer-sub">ENCRYPTED CHANNEL // LIVE FEED</div></div></div>
+    <div class="hud-bottom-right"><div class="blink-square"></div><span id="clock">SYNC 00:00:00</span><span>1920 × 1080 / CINEMATIC</span></div>
+  </div>
+  <div id="intro"></div>
+</div>
+<script>
+(()=>{
+'use strict';
+const CW=1672,CH=941;
+const v=document.getElementById('viewport'), world=document.getElementById('world');
+const rain=document.getElementById('rain'),ctx=rain.getContext('2d',{alpha:true});
+const hud=document.getElementById('hologram'),hx=hud.getContext('2d',{alpha:true});
+const pauseBtn=document.getElementById('pause'),fsBtn=document.getElementById('fullscreen');
+let paused=false,reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const n=148;
+const columns=Array.from({length:n},(_,i)=>({x:i*12.8+(Math.random()*7-3.5),y:Math.random()*CH,speed:24+Math.random()*86,len:4+Math.floor(Math.random()*11),size:12+Math.random()*8,phase:Math.random()*6.28}));
+const rand=(min,max)=>min+Math.random()*(max-min);
+const drops=Array.from({length:39},()=>({x:rand(15,CW-15),y:rand(0,CH),r:rand(.6,1.8),vy:rand(-9,-24),life:rand(0,1),hue:Math.random()>.7?'cyan':'green'}));
+const screen=[[212,358],[493,420],[577,738],[304,756]];
+function insidePoly(x,y,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++) {const [xi,yi]=poly[i],[xj,yj]=poly[j];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;}return inside;}
+// Keep the animated rain mostly behind the character and laptop.
+const occlusions=[
+[[814,0],[1133,0],[1236,75],[1396,191],[1524,321],[1571,643],[1510,811],[920,827],[790,760],[722,653],[803,536],[912,457],[825,352],[772,222]],
+[[168,344],[525,391],[602,789],[299,793]],
+[[586,625],[863,619],[970,779],[729,827],[523,768]]
+];
+function isBack(x,y){if(x<85||x>1610||y<95)return true;return !occlusions.some(p=>insidePoly(x,y,p));}
+function renderRain(t,dt){ctx.clearRect(0,0,CW,CH);ctx.textAlign='center';ctx.textBaseline='middle';
+ for(const c of columns){c.y+=c.speed*dt;if(c.y>CH+c.len*c.size)c.y=-c.len*c.size;
+  ctx.font=`${c.size.toFixed(1)}px monospace`;
+  for(let i=0;i<c.len;i++){
+   const yy=c.y-i*c.size*1.05;if(yy<0||yy>CH||!isBack(c.x,yy))continue;
+   const alpha=(1-i/c.len)*.35 + (i===0?.11:0);
+   const ch=((Math.floor(t/130+i*3+c.phase*10)%3)===0)?String.fromCharCode(12449+Math.floor(Math.random()*94)):(Math.random()>.5?'0':'1');
+   ctx.fillStyle=i===0?`rgba(189,255,203,${alpha*.8})`:`rgba(62,255,89,${alpha*.65})`;
+   ctx.shadowBlur=i===0?8:2;ctx.shadowColor='#52ff64';ctx.fillText(ch,c.x,yy);
+  }
+ }
+ ctx.shadowBlur=0;
+}
+const poly=(c,points)=>{c.beginPath();c.moveTo(...points[0]);for(let i=1;i<points.length;i++)c.lineTo(...points[i]);c.closePath()};
+function screenFx(t){
+ hx.save();poly(hx,screen);hx.clip();
+ // A slow moving scan band, tuned to the exact trapezoid of the illustrated laptop screen.
+ const p=((t*.000125)%1); const sy=350+p*435;
+ const gradient=hx.createLinearGradient(0,sy-60,0,sy+20);
+ gradient.addColorStop(0,'rgba(0,255,137,0)');gradient.addColorStop(.79,'rgba(0,255,137,.015)');gradient.addColorStop(.97,'rgba(173,255,203,.11)');gradient.addColorStop(1,'rgba(0,255,125,0)');
+ hx.fillStyle=gradient;hx.fillRect(180,350,430,450);
+ hx.strokeStyle='rgba(169,255,190,.31)';hx.lineWidth=1;hx.beginPath();hx.moveTo(190,sy);hx.lineTo(590,sy);hx.stroke();
+ // Intermittent micro-glitch strokes that echo the source video's motion graphics.
+ if(Math.sin(t*.0027)>.985){for(let i=0;i<3;i++){let y=410+i*rand(42,79);hx.fillStyle=`rgba(142,255,189,${rand(.08,.17)})`;hx.fillRect(rand(268,470),y,rand(40,100),rand(1,2));}}
+ // Thumbnails gain focus in sequence rather than replacing the artwork.
+ const active=Math.floor(t/3500)%4;
+ const boxes=[[[239,398],[283,413],[303,466],[249,459]],[[250,466],[297,482],[318,545],[263,530]],[[265,546],[315,566],[337,618],[279,610]],[[277,616],[333,634],[357,708],[296,691]]];
+ const focus=boxes[active];poly(hx,focus);hx.strokeStyle=`rgba(192,255,206,${.35+.2*Math.sin(t*.004)})`;hx.lineWidth=1.7;hx.shadowColor='#5bffa3';hx.shadowBlur=7;hx.stroke();hx.shadowBlur=0;
+ hx.restore();
+}
+function panelFx(t){
+ const p=t*.001;
+ // Hologram bracket markers gently pulse beside the existing illustrated panels.
+ const a=.15+.11*Math.sin(p*2.1);hx.lineWidth=1.1;hx.strokeStyle=`rgba(87,255,177,${a})`;
+ const brackets=[[101,137,184,184],[454,311,202,177],[1436,127,128,189],[1487,308,150,158]];
+ brackets.forEach(([x,y,w,h],i)=>{
+  const l=10;
+  hx.beginPath();hx.moveTo(x,y+l);hx.lineTo(x,y);hx.lineTo(x+l,y);
+  hx.moveTo(x+w-l,y);hx.lineTo(x+w,y);hx.lineTo(x+w,y+l);
+  hx.moveTo(x,y+h-l);hx.lineTo(x,y+h);hx.lineTo(x+l,y+h);
+  hx.moveTo(x+w-l,y+h);hx.lineTo(x+w,y+h);hx.lineTo(x+w,y+h-l);hx.stroke();
+ });
+ // Rotating locator on the holographic globe.
+ hx.save();hx.translate(818,552);hx.strokeStyle=`rgba(40,255,227,${.16+.11*Math.sin(p)})`;hx.lineWidth=1;
+ const radius=53;const angle=p*.35;hx.beginPath();hx.arc(0,0,radius,angle,angle+1.45);hx.stroke();hx.beginPath();hx.arc(0,0,radius+7,angle+Math.PI,angle+Math.PI+.48);hx.stroke();hx.restore();
+ // Dynamic marker on the market chart in the upper right corner.
+ const pts=[[1315,80],[1340,73],[1365,58],[1390,65],[1413,52],[1443,55],[1466,37],[1493,42],[1517,19],[1554,31]];
+ const index=((t/650)% (pts.length-1));const j=Math.floor(index),u=index-j;const xp=pts[j][0]*(1-u)+pts[j+1][0]*u,yp=pts[j][1]*(1-u)+pts[j+1][1]*u;
+ hx.beginPath();hx.arc(xp,yp,3.5,0,Math.PI*2);hx.fillStyle='rgba(170,255,197,.7)';hx.shadowColor='#76ffd4';hx.shadowBlur=10;hx.fill();hx.shadowBlur=0;
+}
+function embers(t,dt){for(const e of drops){e.y+=e.vy*dt;e.life=(e.life+dt*.3)%1;if(e.y<-10){e.y=CH+10;e.x=rand(0,CW)};
+ if(!isBack(e.x,e.y))continue;const alpha=.12+.25*(.5+.5*Math.sin(t*.00075+e.x));hx.beginPath();hx.arc(e.x,e.y,e.r,0,Math.PI*2);hx.fillStyle=e.hue==='cyan'?`rgba(80,249,255,${alpha})`:`rgba(151,255,142,${alpha})`;hx.fill();}}
+let last=0, elapsed=0;
+function frame(now){requestAnimationFrame(frame);if(paused||reduced)return;
+const dt=Math.min(.044,Math.max(0,(now-last)/1000||.016));last=now;elapsed+=dt*1000;
+renderRain(elapsed,dt);hx.clearRect(0,0,CW,CH);panelFx(elapsed);screenFx(elapsed);embers(elapsed,dt);
+}
+function drawStatic(){ctx.clearRect(0,0,CW,CH);hx.clearRect(0,0,CW,CH);panelFx(0);screenFx(0)}
+requestAnimationFrame(frame);if(reduced)drawStatic();
+function togglePause(){paused=!paused;document.body.classList.toggle('paused',paused);pauseBtn.textContent=paused?'▶ RESUME':'⏸ PAUSE';pauseBtn.setAttribute('aria-pressed',String(paused));if(!paused)last=0;}
+pauseBtn.addEventListener('click',togglePause);
+async function toggleFS(){if(!document.fullscreenElement){try{await v.requestFullscreen()}catch(err){console.warn('Fullscreen is not available in this browser.',err)}}else{await document.exitFullscreen()}}
+fsBtn.addEventListener('click',toggleFS);
+document.addEventListener('fullscreenchange',()=>{fsBtn.textContent=document.fullscreenElement?'⛶ EXIT FULLSCREEN':'⛶ FULLSCREEN'});
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/BUTTON|INPUT|TEXTAREA/.test(document.activeElement?.tagName||'')){e.preventDefault();togglePause()}if(e.code==='KeyF'&&!e.repeat)toggleFS()});
+const glow=document.getElementById('mouse-glow');let px=0,py=0,tx=0,ty=0;
+v.addEventListener('pointermove',e=>{const r=v.getBoundingClientRect();tx=(e.clientX-r.left)/r.width-.5;ty=(e.clientY-r.top)/r.height-.5;
+ const wr=world.getBoundingClientRect();glow.style.setProperty('--x',((e.clientX-wr.left)/wr.width*100).toFixed(2)+'%');glow.style.setProperty('--y',((e.clientY-wr.top)/wr.height*100).toFixed(2)+'%');},{passive:true});
+function parallax(){px+=(tx-px)*.045;py+=(ty-py)*.045;if(!reduced)world.style.transform=`translate(calc(-50% + ${(-px*12).toFixed(2)}px),calc(-50% + ${(-py*9).toFixed(2)}px)) scale(1.015)`;requestAnimationFrame(parallax)}requestAnimationFrame(parallax);
+function updateClock(){const date=new Date();document.getElementById('clock').textContent=`SYNC ${date.toLocaleTimeString('en-GB',{hour12:false})}`;}updateClock();setInterval(updateClock,1000);
+})();
+</script>
 </body>
 </html>
