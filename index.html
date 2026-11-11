@@ -11,6 +11,7 @@
 *{box-sizing:border-box}
 html,body{height:100%;width:100%;margin:0;overflow:hidden;background:#020509;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
 button{font:inherit}
+@font-face{font-family:'Sixtyfour';src:url(sixtyfour.woff2) format('woff2');font-display:swap}
 #viewport {width:100vw;height:100vh;min-height:100svh;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 53%,#121149 0%,#080817 42%,#020509 90%);isolation:isolate}
 #world {position:absolute;left:50%;top:50%;width:max(100vw,calc(100vh * 1672 / 941));height:max(100vh,calc(100vw * 941 / 1672));transform:translate(-50%,-50%) scale(1.015);will-change:transform;overflow:hidden}
 #art{width:100%;height:100%;display:block;pointer-events:none;user-select:none}
@@ -30,7 +31,7 @@ canvas,.vfx {position:absolute;inset:0;width:100%;height:100%;pointer-events:non
 .signal-heading{font-size:clamp(9px,.65vw,12px);font-weight:800;letter-spacing:.23em}
 .signal-sub{font-size:clamp(8px,.55vw,10px);letter-spacing:.15em;color:var(--subtle);margin-top:6px}
 .hud-right{position:absolute;top:clamp(18px,2.4vw,42px);right:clamp(20px,2.6vw,50px);display:flex;gap:8px;pointer-events:auto}
-.ctrl{border:1px solid rgba(108,255,151,.29);background:rgba(2,18,14,.64);backdrop-filter:blur(12px);color:#d4ffdb;padding:10px 13px;min-height:37px;border-radius:3px;text-transform:uppercase;letter-spacing:.15em;font-size:10px;cursor:pointer;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease}
+.ctrl{border:1px solid rgba(108,255,151,.29);background:rgba(2,18,14,.64);backdrop-filter:blur(12px);color:#d4ffdb;padding:10px 13px;min-height:37px;border-radius:3px;text-transform:uppercase;letter-spacing:.06em;font-size:10px;font-family:'Sixtyfour',ui-monospace,monospace;cursor:pointer;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease}
 .ctrl:hover,.ctrl:focus-visible{border-color:rgba(122,255,156,.8);background:rgba(18,61,35,.87);box-shadow:0 0 16px rgba(51,255,105,.19);outline:none}
 .hud-bottom{position:absolute;bottom:clamp(18px,2.8vw,52px);left:clamp(22px,2.75vw,52px);display:flex;align-items:center;gap:14px}
 .hud-bar{width:39px;height:1px;background:linear-gradient(90deg,#63ff76,rgba(99,255,118,0));box-shadow:0 0 10px #62ff71}
