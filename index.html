@@ -70,14 +70,7 @@ body.paused *,body.paused *::after,body.paused *::before{animation-play-state:pa
     <div id="mouse-glow" class="vfx"></div>
   </div>
   <div class="ui">
-    <div class="edge tl"></div><div class="edge tr"></div><div class="edge bl"></div><div class="edge br"></div>
-    <div class="hud-top">
-      <div class="signal"></div>
-      <div><div class="signal-heading">NEURAL LINK <span style="opacity:.55">/ 01</span></div><div class="signal-sub">CONNECTION ESTABLISHED</div></div>
-    </div>
     <div class="hud-right"><button id="pause" class="ctrl" title="Pause or resume animation (Space)" aria-pressed="false">⏸ PAUSE</button><button id="fullscreen" class="ctrl" title="Fullscreen (F)">⛶ FULLSCREEN</button></div>
-    <div class="hud-bottom"><div class="hud-bar"></div><div><div class="footer-title">SYSTEM ONLINE</div><div class="footer-sub">ENCRYPTED CHANNEL // LIVE FEED</div></div></div>
-    <div class="hud-bottom-right"><div class="blink-square"></div><span id="clock">SYNC 00:00:00</span><span>1920 × 1080 / CINEMATIC</span></div>
   </div>
   <div id="intro"></div>
 </div>
@@ -172,7 +165,6 @@ const glow=document.getElementById('mouse-glow');let px=0,py=0,tx=0,ty=0;
 v.addEventListener('pointermove',e=>{const r=v.getBoundingClientRect();tx=(e.clientX-r.left)/r.width-.5;ty=(e.clientY-r.top)/r.height-.5;
  const wr=world.getBoundingClientRect();glow.style.setProperty('--x',((e.clientX-wr.left)/wr.width*100).toFixed(2)+'%');glow.style.setProperty('--y',((e.clientY-wr.top)/wr.height*100).toFixed(2)+'%');},{passive:true});
 function parallax(){px+=(tx-px)*.045;py+=(ty-py)*.045;if(!reduced)world.style.transform=`translate(calc(-50% + ${(-px*12).toFixed(2)}px),calc(-50% + ${(-py*9).toFixed(2)}px)) scale(1.015)`;requestAnimationFrame(parallax)}requestAnimationFrame(parallax);
-function updateClock(){const date=new Date();document.getElementById('clock').textContent=`SYNC ${date.toLocaleTimeString('en-GB',{hour12:false})}`;}updateClock();setInterval(updateClock,1000);
 })();
 </script>
 </body>
